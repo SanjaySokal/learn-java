@@ -1,0 +1,36 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+@WebServlet("/register")
+public class register extends HttpServlet {
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String name = req.getParameter("name");
+		String email = req.getParameter("email");
+		String password = req.getParameter("password");
+		
+		PrintWriter out = resp.getWriter();
+		
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/testing","root","");
+			PreparedStatement stmt = con.prepareStatement("INSERT INTO `user`(`name`, `email`, `password`) VALUES ('" + name + "','" + email + "', '" + password + "')");
+			
+			int data = stmt.executeUpdate();
+			if (data > 0) {
+				out.println("data added");
+			}
+		} catch (Exception e) {
+			out.println("An Exception found: " + e.getMessage());
+		}
+	}
+}
